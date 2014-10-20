@@ -6,7 +6,18 @@ Overview
 [![Platform](http://cocoapod-badges.herokuapp.com/p/GCDTelnetServer/badge.png)](https://github.com/swisspol/GCDTelnetServer)
 [![License](http://img.shields.io/cocoapods/l/GCDTelnetServer.svg)](LICENSE)
 
-GCDTelnetServer is an embedded Telnet server for iOS and OS X based on GCD. It is available under a friendly [New BSD License](LICENSE).
+GCDTelnetServer is a drop-in embedded Telnet server for iOS and OS X apps.
+
+Features:
+* Elegant and simple API
+* Fully asynchronous (doesn't need the main thread)
+* Entirely built using [Grand Central Dispatch](http://en.wikipedia.org/wiki/Grand_Central_Dispatch) for best performance and concurrency
+* Support for ANSI colors with an extension on `NSMutableString`
+* Can parse line inputs as command and arguments command line interface
+* Full support for IPv4 and IPv6
+* Automatically handles background and suspended modes on iOS
+* No dependencies on third-party source code
+* Available under a friendly [New BSD License](LICENSE)
 
 Requirements:
 * OS X 10.7 or later (x86_64)
