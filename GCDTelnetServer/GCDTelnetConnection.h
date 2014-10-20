@@ -184,12 +184,12 @@
  *  Convenience methods that writes a string to the connection using lossy
  *  ASCII encoding.
  */
-- (BOOL)writeANSIString:(NSString*)string withTimeout:(NSTimeInterval)timeout;
+- (BOOL)writeASCIIString:(NSString*)string withTimeout:(NSTimeInterval)timeout;
 
 /*
  *  Convenience methods that writes a formatted string to the connection using
  *  lossy ASCII encoding.
  */
-- (void)writeANSIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion;
+- (void)writeASCIIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion;
 
 @end

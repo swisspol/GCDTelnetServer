@@ -201,13 +201,17 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
   if (_prompt) {
     [string appendString:_prompt];
   }
-  [self writeANSIStringAsynchronously:string completion:^(BOOL success) {
-    if (success) {
-      [self _readInput];
-    } else {
-      [self close];
-    }
-  }];
+  if (string.length) {
+    [self writeASCIIStringAsynchronously:string completion:^(BOOL success) {
+      if (success) {
+        [self _readInput];
+      } else {
+        [self close];
+      }
+    }];
+  } else {
+    [self _readInput];
+  }
 }
 
 @end
@@ -381,11 +385,11 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
 
 @implementation GCDTelnetConnection (Extensions)
 
-- (BOOL)writeANSIString:(NSString*)string withTimeout:(NSTimeInterval)timeout {
+- (BOOL)writeASCIIString:(NSString*)string withTimeout:(NSTimeInterval)timeout {
   return [self writeData:[string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] withTimeout:timeout];
 }
 
-- (void)writeANSIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion {
+- (void)writeASCIIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion {
   [self writeDataAsynchronously:[string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] completion:completion];
 }
 
