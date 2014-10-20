@@ -188,7 +188,16 @@
 @interface GCDTelnetConnection (Extensions)
 
 /**
- *  Returns a sanitized version of a string to send to the remote terminal.
+ *  Parses a line like a command line interface extracting the command and
+ *  arguments.
+ *
+ *  This methods supports quoted arguments using single or double quotes.
+ */
+- (NSArray*)parseLineAsCommandAndArguments:(NSString*)line;
+
+/**
+ *  Returns a sanitized version of a string suitable for sending to the remote
+ *  terminal.
  *
  *  The current implementation replaces all newline characters by carriage
  *  returns.

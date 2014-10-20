@@ -45,6 +45,8 @@ static const char* _telnetOptionStrings[] = {
   NULL, "Window Size", "Terminal Speed", "Remote Flow Control", "Linemode", NULL, "Environment Variables", NULL, NULL, NULL // 30-39
 };
 
+static NSRegularExpression* _commandLineParser = nil;
+
 @interface GCDTelnetConnection () {
 @private
   NSMutableString* _lineBuffer;
@@ -55,6 +57,13 @@ static const char* _telnetOptionStrings[] = {
 @end
 
 @implementation GCDTelnetConnection
+
++ (void)initialize {
+  if (self == [GCDTelnetConnection class]) {
+    _commandLineParser = [[NSRegularExpression alloc] initWithPattern:@"(\"[^\"]+\"|'[^']+'|[^\\s\"]+)" options:0 error:NULL];
+    _LOG_DEBUG_CHECK(_commandLineParser);
+  }
+}
 
 - (instancetype)initWithSocket:(int)socket {
   if ((self = [super initWithSocket:socket])) {
@@ -391,6 +400,19 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
 @end
 
 @implementation GCDTelnetConnection (Extensions)
+
+- (NSArray*)parseLineAsCommandAndArguments:(NSString*)line {
+  NSMutableArray* array = [[NSMutableArray alloc] init];
+  [_commandLineParser enumerateMatchesInString:line options:0 range:NSMakeRange(0, line.length) usingBlock:^(NSTextCheckingResult* result, NSMatchingFlags flags, BOOL* stop) {
+    NSString* string = [line substringWithRange:result.range];
+    if (([string hasPrefix:@"\""] && [string hasSuffix:@"\""]) || ([string hasPrefix:@"'"] && [string hasSuffix:@"'"])) {  // TODO: Strip quotes directly in Regex
+      [array addObject:[string substringWithRange:NSMakeRange(1, string.length - 2)]];
+    } else {
+      [array addObject:string];
+    }
+  }];
+  return array;
+}
 
 - (NSString*)sanitizeStringForTerminal:(NSString*)string {
   return [string stringByReplacingOccurrencesOfString:@"\n" withString:kCarriageReturnString];

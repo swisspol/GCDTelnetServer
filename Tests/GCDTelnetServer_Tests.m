@@ -39,7 +39,14 @@
 
 @implementation GCDTelnetServer_Tests
 
-- (void)testOK {
+- (void)testCLIParsing {
+  GCDTelnetConnection* connection = [[GCDTelnetConnection alloc] initWithSocket:0];
+  NSArray* array1 = [connection parseLineAsCommandAndArguments:@"this is 'a test' string \"using quoting\""];
+  NSArray* array2 = @[@"this", @"is", @"a test", @"string", @"using quoting"];
+  XCTAssertEqualObjects(array1, array2);
+}
+
+- (void)testHandlers {
   GCDTelnetServer* server = [[GCDTelnetServer alloc] initWithPort:4444 startHandler:^NSString*(GCDTelnetConnection* connection) {
     return @"Hello World!\n";
   } lineHandler:^NSString *(GCDTelnetConnection* connection, NSString* line) {
