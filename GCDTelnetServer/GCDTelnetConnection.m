@@ -311,9 +311,10 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
 - (NSData*)processDelete {
   if (_lineBuffer.length) {
     [_lineBuffer deleteCharactersInRange:NSMakeRange(_lineBuffer.length - 1, 1)];
+    unsigned char buffer[] = {0x08, 0x20, 0x08};  // http://stackoverflow.com/questions/1689554/telnet-server-backspace-delete-not-working
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
   }
-  unsigned char buffer[] = {0x08, 0x20, 0x08};  // http://stackoverflow.com/questions/1689554/telnet-server-backspace-delete-not-working
-  return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+  return [self _beepData];
 }
 
 - (NSData*)processCarriageReturn {
