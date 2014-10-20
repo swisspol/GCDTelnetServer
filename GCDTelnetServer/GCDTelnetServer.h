@@ -52,6 +52,8 @@ typedef NSString* (^GCDTelnetLineHandler)(GCDTelnetConnection* connection, NSStr
 /**
  *  The GCDTelnetCommandHandler is a special line handler that pre-parses the
  *  line like a command line interface extracting the command and arguments.
+ *
+ *  @warning This block will be executed on arbitrary threads.
  */
 typedef NSString* (^GCDTelnetCommandHandler)(GCDTelnetConnection* connection, NSString* command, NSArray* arguments);
 

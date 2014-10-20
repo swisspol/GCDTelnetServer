@@ -41,13 +41,9 @@ int main(int argc, const char* argv[]) {
       [string appendFormat:@"\nYou are connected using \"%@\"\n", connection.terminalType];
       return string;
       
-    } commandHandler:^NSString*(GCDTelnetConnection* connection, NSString* command, NSArray* arguments) {
+    } lineHandler:^NSString*(GCDTelnetConnection* connection, NSString* line) {
       
-      if ([command isEqualToString:@"quit"]) {
-        [connection close];
-        return nil;
-      }
-      return [NSString stringWithFormat:@"INPUT COMMAND = %@ (%@)\n", command, [arguments componentsJoinedByString:@", "]];
+      return [line stringByAppendingString:@"\n"];
       
     }];
     if (![server start]) {
