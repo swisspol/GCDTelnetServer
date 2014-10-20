@@ -352,13 +352,14 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
   return [NSData dataWithBytes:&character length:1];
 }
 
-- (NSData*)processOtherData:(NSData*)data {
-  return [self _beepData];
+- (NSData*)processNonASCIICharacter:(unsigned char)character {
+  return nil;
 }
 
-- (NSData*)processRawInput:(NSData*)data {
-  const unsigned char* bytes = data.bytes;
-  NSUInteger length = data.length;
+- (NSData*)processRawInput:(NSData*)input {
+  const unsigned char* bytes = input.bytes;
+  NSUInteger length = input.length;
+  
   if ((length > 2) && (bytes[0] == kCSIPrefix[0]) && (bytes[1] == kCSIPrefix[1])) {
     if (length == 3) {
       switch (bytes[2]) {
@@ -370,24 +371,45 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
         
       }
     }
-    return [self processOtherANSIEscapeSequence:data];
-  } else if ((length == 2) && (bytes[0] == kControlCode_CR) && (bytes[1] == kControlCode_NUL)) {
-    return [self processCarriageReturn];
-  } else if (length == 1) {
-    switch (bytes[0]) {
-      
-      case 0x09: return [self processTab];
-      case 0x7F: return [self processDelete];
-      
-      default:
-        if (bytes[0] <= 127) {
-          return [self processOtherASCIICharacter:bytes[0]];
-        }
-        break;
-      
+    return [self processOtherANSIEscapeSequence:input];
+  }
+  
+  NSMutableData* output = [[NSMutableData alloc] init];
+  while (length) {
+    NSData* data = nil;
+    if ((length >= 2) && (bytes[0] == kControlCode_CR) && (bytes[1] == kControlCode_NUL)) {
+      data = [self processCarriageReturn];
+      bytes += 2;
+      length -= 2;
+    } else {
+      switch (bytes[0]) {
+        
+        case 0x09:
+          data = [self processTab];
+          break;
+        
+        case 0x7F:
+          data = [self processDelete];
+          break;
+        
+        default:
+          if (bytes[0] <= 127) {
+            data = [self processOtherASCIICharacter:bytes[0]];
+          } else {
+            data = [self processNonASCIICharacter:bytes[0]];
+          }
+          break;
+        
+      }
+      bytes += 1;
+      length -= 1;
+    }
+    if (data.length) {
+      [output appendData:data];
     }
   }
-  return [self processOtherData:data];
+  
+  return output;
 }
 
 - (NSString*)processLine:(NSString*)line {

@@ -162,11 +162,11 @@
 - (NSData*)processOtherASCIICharacter:(unsigned char)character;
 
 /*
- *  Called when unexpected data has been received.
+ *  Called when a non-ASCII character has been received.
  *
- *  The default implementation just beeps.
+ *  The default implementation does nothing.
  */
-- (NSData*)processOtherData:(NSData*)data;
+- (NSData*)processNonASCIICharacter:(unsigned char)character;
 
 /*
  *  Called whenever input data has been received from the remote terminal.
@@ -174,7 +174,7 @@
  *  The default implementation parses the data and calls one of the other
  *  methods.
  */
-- (NSData*)processRawInput:(NSData*)data;
+- (NSData*)processRawInput:(NSData*)input;
 
 /*
  *  Called whenever a line has been fully received from the remote terminal.
