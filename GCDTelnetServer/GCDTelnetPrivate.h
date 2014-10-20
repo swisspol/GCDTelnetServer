@@ -87,6 +87,6 @@ typedef NS_ENUM(unsigned char, TelnetOption) {
 };
 
 @interface GCDTelnetServer ()
-@property(nonatomic, readonly) TelnetStartHandler startHandler;
-@property(nonatomic, readonly) TelnetLineHandler lineHandler;
+@property(nonatomic, readonly) GCDTelnetStartHandler startHandler;
+@property(nonatomic, readonly) GCDTelnetLineHandler lineHandler;
 @end

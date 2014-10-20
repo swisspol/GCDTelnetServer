@@ -194,7 +194,7 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
     _LOG_ERROR(@"Failed retrieving Telnet terminal type from %@", self.remoteIPAddress);
   }
   NSMutableString* string = [[NSMutableString alloc] init];
-  TelnetStartHandler handler = [(GCDTelnetServer*)self.peer startHandler];
+  GCDTelnetStartHandler handler = [(GCDTelnetServer*)self.peer startHandler];
   if (handler) {
     [string appendString:[handler(self) stringByReplacingOccurrencesOfString:@"\n" withString:kCarriageReturnString]];
   }
@@ -377,7 +377,7 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
 }
 
 - (NSString*)processLine:(NSString*)line {
-  TelnetLineHandler handler = [(GCDTelnetServer*)self.peer lineHandler];
+  GCDTelnetLineHandler handler = [(GCDTelnetServer*)self.peer lineHandler];
   if (handler == NULL) {
     _LOG_DEBUG_UNREACHABLE();
     return nil;

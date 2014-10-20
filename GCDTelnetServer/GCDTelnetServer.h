@@ -27,13 +27,13 @@
 
 #import "GCDTelnetConnection.h"
 
-typedef NSString* (^TelnetStartHandler)(GCDTelnetConnection* connection);  // Returned string will be converted to ASCII
-typedef NSString* (^TelnetLineHandler)(GCDTelnetConnection* connection, NSString* line);  // Returned string will be converted to ASCII
+typedef NSString* (^GCDTelnetStartHandler)(GCDTelnetConnection* connection);  // Returned string will be converted to ASCII
+typedef NSString* (^GCDTelnetLineHandler)(GCDTelnetConnection* connection, NSString* line);  // Returned string will be converted to ASCII
 
 @interface GCDTelnetServer : GCDTCPServer
-- (instancetype)initWithPort:(NSUInteger)port startHandler:(TelnetStartHandler)startHandler lineHandler:(TelnetLineHandler)lineHandler;
+- (instancetype)initWithPort:(NSUInteger)port startHandler:(GCDTelnetStartHandler)startHandler lineHandler:(GCDTelnetLineHandler)lineHandler;
 - (instancetype)initWithConnectionClass:(Class)connectionClass
                                    port:(NSUInteger)port
-                           startHandler:(TelnetStartHandler)startHandler
-                            lineHandler:(TelnetLineHandler)lineHandler;
+                           startHandler:(GCDTelnetStartHandler)startHandler
+                            lineHandler:(GCDTelnetLineHandler)lineHandler;
 @end

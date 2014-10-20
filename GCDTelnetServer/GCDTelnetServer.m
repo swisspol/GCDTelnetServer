@@ -117,14 +117,14 @@
 
 @implementation GCDTelnetServer
 
-- (instancetype)initWithPort:(NSUInteger)port startHandler:(TelnetStartHandler)startHandler lineHandler:(TelnetLineHandler)lineHandler {
+- (instancetype)initWithPort:(NSUInteger)port startHandler:(GCDTelnetStartHandler)startHandler lineHandler:(GCDTelnetLineHandler)lineHandler {
   return [self initWithConnectionClass:[GCDTelnetConnection class] port:port startHandler:startHandler lineHandler:lineHandler];
 }
 
 - (instancetype)initWithConnectionClass:(Class)connectionClass
                                    port:(NSUInteger)port
-                           startHandler:(TelnetStartHandler)startHandler
-                            lineHandler:(TelnetLineHandler)lineHandler {
+                           startHandler:(GCDTelnetStartHandler)startHandler
+                            lineHandler:(GCDTelnetLineHandler)lineHandler {
   _LOG_DEBUG_CHECK([connectionClass isSubclassOfClass:[GCDTelnetConnection class]]);
   if ((self = [super initWithConnectionClass:connectionClass port:port])) {
     _startHandler = startHandler;
