@@ -6,7 +6,7 @@ Overview
 [![Platform](http://cocoapod-badges.herokuapp.com/p/GCDTelnetServer/badge.png)](https://github.com/swisspol/GCDTelnetServer)
 [![License](http://img.shields.io/cocoapods/l/GCDTelnetServer.svg)](LICENSE)
 
-GCDTelnetServer is a embedded Telnet server for iOS and OS X based on GCD [New BSD License](LICENSE).
+GCDTelnetServer is an embedded Telnet server for iOS and OS X based on GCD. It is available under a friendly [New BSD License](LICENSE).
 
 Requirements:
 * OS X 10.7 or later (x86_64)
@@ -16,7 +16,7 @@ Requirements:
 Getting Started
 ===============
 
-Download or check out the [latest release](https://github.com/swisspol/GCDTelnetServer/releases) of GCDTelnetServer then add the entire "GCDTelnetServer" subfolder to your Xcode project.
+Download or check out the [latest release](https://github.com/swisspol/GCDTelnetServer/releases) of GCDTelnetServer then add both the "GCDTelnetServer" and "GCDNetworking/GCDNetworking" subfolders to your Xcode project.
 
 Alternatively, you can install GCDTelnetServer using [CocoaPods](http://cocoapods.org/) by simply adding this line to your Xcode project's Podfile:
 ```
