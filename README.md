@@ -36,8 +36,7 @@ GCDTCPServer* server = [[GCDTelnetServer alloc] initWithPort:2323 startHandler:^
   
 } lineHandler:^NSString*(GCDTelnetConnection* connection, NSString* line) {
   
-  // Simply echo back the received line
-  // You could as easily execute a command and return a result as a string
+  // Simply echo back the received line but you could do anything here
   return [line stringByAppendingString:@"\n"];
   
 }];
@@ -47,3 +46,68 @@ GCDTCPServer* server = [[GCDTelnetServer alloc] initWithPort:2323 startHandler:^
 Then launch Terminal on your Mac, and simply enter `telnet YOUR_COMPUTER_OR_IPHONE_IP_ADDRESS 2323` and voilà, you can communicate "live" with your app.
 
 **GCDTelnetServer has an extensive customization API, be sure to peruse [GCDTelnetConnection.h](GCDTelnetServer/GCDTelnetConnection.h).**
+
+Executing Remote Commands
+=========================
+
+The most interesting use of GCDTelnetServer is to execute commands inside your app while it's running on the device e.g. to query internal state, trigger actions while the app is in the background, etc...
+
+This sample code demonstrate how to implement a welcome message with more information (and ANSI colors!), and also support 3 commands (`quit`, `crash` and `setwcolor` which takes some arguments):
+```objectivec
+#import "GCDTelnetServer.h"
+#import "NSMutableString+ANSI.h"
+
+- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
+  GCDTCPServer* server = [[GCDTelnetServer alloc] initWithPort:2323 startHandler:^NSString*(GCDTelnetConnection* connection) {
+    
+    UIDevice* device = [UIDevice currentDevice];
+    NSMutableString* welcome = [[NSMutableString alloc] init];
+    [welcome appendANSIStringWithColor:kANSIColor_Green bold:NO format:@"You are connected from %@ using \"%@\"\n", connection.remoteIPAddress, connection.terminalType];
+    [welcome appendANSIStringWithColor:kANSIColor_Green bold:NO format:@"Current device is %@ running %@ %@\n", device.model, device.systemName, device.systemVersion];
+    return welcome;
+    
+  } commandHandler:^NSString*(GCDTelnetConnection* connection, NSString* command, NSArray* arguments) {
+    
+    if ([command isEqualToString:@"quit"]) {
+      [connection close];
+      return nil;
+    } else if ([command isEqualToString:@"crash"]) {
+      abort();
+    } else if ([command isEqualToString:@"setwcolor"]) {
+      if (arguments.count == 3) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          _window.backgroundColor = [UIColor colorWithRed:[arguments[0] doubleValue] green:[arguments[1] doubleValue] blue:[arguments[2] doubleValue] alpha:1.0];
+        });
+        return @"OK\n";
+      }
+      return @"Usage: setwcolor red green blue\n";
+    }
+    
+    NSMutableString* error = [[NSMutableString alloc] init];
+    [error appendANSIStringWithColor:kANSIColor_Red bold:YES format:@"UNKNOWN COMMAND = %@ (%@)\n", command, [arguments componentsJoinedByString:@", "]];
+    return error;
+    
+  }];
+  [server start];  // TODO: Handle error
+  
+  return YES;
+}
+
+```
+
+And here's an example session:
+```sh
+$ telnet localhost 2323
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+You are connected from 127.0.0.1 using "XTERM-256COLOR"
+Current device is iPad Simulator running iPhone OS 8.1
+> test
+UNKNOWN COMMAND = test ()
+> setwcolor
+Usage: setwcolor red green blue
+> setwcolor 1 0 0
+OK
+> quitConnection closed by foreign host.
+```
