@@ -194,9 +194,9 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
     _LOG_ERROR(@"Failed retrieving Telnet terminal type from %@", self.remoteIPAddress);
   }
   NSMutableString* string = [[NSMutableString alloc] init];
-  GCDTelnetStartHandler handler = [(GCDTelnetServer*)self.peer startHandler];
-  if (handler) {
-    [string appendString:[handler(self) stringByReplacingOccurrencesOfString:@"\n" withString:kCarriageReturnString]];
+  NSString* start = [self start];
+  if (start) {
+    [string appendString:start];
   }
   if (_prompt) {
     [string appendString:_prompt];
@@ -220,6 +220,14 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
 
 - (NSMutableString*)lineBuffer {
   return _lineBuffer;
+}
+
+- (NSString*)start {
+  GCDTelnetStartHandler handler = [(GCDTelnetServer*)self.peer startHandler];
+  if (handler) {
+    return [self sanitizeStringForTerminal:handler(self)];
+  }
+  return nil;
 }
 
 - (NSData*)_beepData {
@@ -374,16 +382,19 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
 
 - (NSString*)processLine:(NSString*)line {
   GCDTelnetLineHandler handler = [(GCDTelnetServer*)self.peer lineHandler];
-  if (handler == NULL) {
-    _LOG_DEBUG_UNREACHABLE();
-    return nil;
+  if (handler) {
+    return [self sanitizeStringForTerminal:handler(self, line)];
   }
-  return [handler(self, line) stringByReplacingOccurrencesOfString:@"\n" withString:kCarriageReturnString];
+  return nil;
 }
 
 @end
 
 @implementation GCDTelnetConnection (Extensions)
+
+- (NSString*)sanitizeStringForTerminal:(NSString*)string {
+  return [string stringByReplacingOccurrencesOfString:@"\n" withString:kCarriageReturnString];
+}
 
 - (BOOL)writeASCIIString:(NSString*)string withTimeout:(NSTimeInterval)timeout {
   return [self writeData:[string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] withTimeout:timeout];
