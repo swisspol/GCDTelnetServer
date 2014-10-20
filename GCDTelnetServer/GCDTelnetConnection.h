@@ -27,33 +27,169 @@
 
 #import "GCDNetworking.h"
 
+/**
+ *  The GCDTelnetConnection class is the class used to implement connections
+ *  for GCDTelnetServer.
+ */
 @interface GCDTelnetConnection : GCDTCPServerConnection
+
+/*
+ *  Returns the type of the remote terminal.
+ *
+ *  @warning This will only be non-nil if the connected peer responded to the
+ *  corresponding Telnet command.
+ */
 @property(nonatomic, readonly) NSString* terminalType;
+
+/*
+ *  Returns YES if the remote terminal is a color one.
+ */
 @property(nonatomic, readonly, getter=isColorTerminal) BOOL colorTerminal;
-@property(nonatomic, copy) NSString* prompt;  // Default is "> " (behavior is undefined if changed outside of start handler - must be ASCII)
-@property(nonatomic, copy) NSString* tabPlaceholder;  // Default is "\t" (behavior is undefined if changed outside of start handler - must be ASCII)
-@property(nonatomic) NSUInteger maxHistorySize;  // Set to 0 to disable history - Default is unlimited (behavior is undefined if changed outside of start handler)
-- (BOOL)writeANSIString:(NSString *)string withTimeout:(NSTimeInterval)timeout;
-- (void)writeANSIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion;
+
+/*
+ *  Sets the prompt to show at the beginning of a new line.
+ *
+ *  Set this value to nil to remove the prompt entirely.
+ *
+ *  The default value is "> ".
+ *
+ *  @warning Setting this value to a non-ASCII string or changing it outside
+ *  of the scope of the GCDTelnetServer start handler is not supported.
+ */
+@property(nonatomic, copy) NSString* prompt;
+
+/*
+ *  Sets the placeholder string inserted when the tab key is pressed.
+ *
+ *  The default value is "\t".
+ *
+ *  @warning Setting this value to a non-ASCII string or changing it outside
+ *  of the scope of the GCDTelnetServer start handler is not supported.
+ */
+@property(nonatomic, copy) NSString* tabPlaceholder;
+
+/*
+ *  Sets the maximum number of lines preserved by the history.
+ *
+ *  Set this value to 0 to disable the history entirely.
+ *
+ *  The default value is NSIntegerMax i.e. unlimited.
+ *
+ *  @warning Changing this value outside of the scope of the GCDTelnetServer
+ *  start handler is not supported.
+ */
+@property(nonatomic) NSUInteger maxHistorySize;
+
 @end
 
 @interface GCDTelnetConnection (Subclassing)
-@property(nonatomic, readonly) NSMutableString* lineBuffer;  // ASCII characters only
 
+/*
+ *  Direct access to the line buffer used by the connection.
+ *
+ *  @warning This string must only contain ASCII characters.
+ */
+@property(nonatomic, readonly) NSMutableString* lineBuffer;
+
+/*
+ *  Called when the arrow up key is pressed.
+ *
+ *  The default implementation navigates the history towards older entries.
+ */
 - (NSData*)processCursorUp;
+
+/*
+ *  Called when the arrow up key is pressed.
+ *
+ *  The default implementation navigates the history towards newer entries.
+ */
 - (NSData*)processCursorDown;
+
+/*
+ *  Called when the arrow right key is pressed.
+ *
+ *  The default implementation just beeps.
+ */
 - (NSData*)processCursorForward;
+
+/*
+ *  Called when the arrow left key is pressed.
+ *
+ *  The default implementation just beeps.
+ */
 - (NSData*)processCursorBack;
+
+/*
+ *  Called when an unimplemented ANSI escape sequence has been received.
+ *
+ *  The default implementation just beeps.
+ */
 - (NSData*)processOtherANSIEscapeSequence:(NSData*)data;
 
+/*
+ *  Called when the tab key is pressed.
+ *
+ *  The default implementation inserts the tab placeholder string.
+ */
 - (NSData*)processTab;
+
+/*
+ *  Called when the delete key is pressed.
+ *
+ *  The default implementation deletes the last character.
+ */
 - (NSData*)processDelete;
+
+/*
+ *  Called when the return key is pressed.
+ *
+ *  The default implementation calls -processLine: and updates the history.
+ */
 - (NSData*)processCarriageReturn;
+
+/*
+ *  Called when any other ASCII character has been received.
+ *
+ *  The default implementation inserts the character.
+ */
 - (NSData*)processOtherASCIICharacter:(unsigned char)character;
 
+/*
+ *  Called when unexpected data has been received.
+ *
+ *  The default implementation just beeps.
+ */
 - (NSData*)processOtherData:(NSData*)data;
 
+/*
+ *  Called whenever input data has been received from the remote terminal.
+ *
+ *  The default implementation parses the data and calls one of the other
+ *  methods.
+ */
 - (NSData*)processRawInput:(NSData*)data;
 
+/*
+ *  Called whenever a line has been fully received from the remote terminal.
+ *
+ *  The default implementation calls the GCDTelnetServer line handler.
+ */
 - (NSString*)processLine:(NSString*)line;
+
+@end
+
+@interface GCDTelnetConnection (Extensions)
+
+/*
+ *  Convenience methods that writes a string to the connection using lossy
+ *  ASCII encoding.
+ */
+- (BOOL)writeANSIString:(NSString*)string withTimeout:(NSTimeInterval)timeout;
+
+/*
+ *  Convenience methods that writes a formatted string to the connection using
+ *  lossy ASCII encoding.
+ */
+- (void)writeANSIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion;
+
 @end

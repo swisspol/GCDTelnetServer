@@ -27,13 +27,46 @@
 
 #import "GCDTelnetConnection.h"
 
-typedef NSString* (^GCDTelnetStartHandler)(GCDTelnetConnection* connection);  // Returned string will be converted to ASCII
-typedef NSString* (^GCDTelnetLineHandler)(GCDTelnetConnection* connection, NSString* line);  // Returned string will be converted to ASCII
+/**
+ *  The GCDTelnetStartHandler is called by the Telnet server whenever a new
+ *  connection is open with a remote terminal.
+ *
+ *  The handler can return a string (or nil) to be sent to the terminal.
+ *  Note that the string will be converted to ASCII characters.
+ *
+ *  @warning This block will be executed on arbitrary threads.
+ */
+typedef NSString* (^GCDTelnetStartHandler)(GCDTelnetConnection* connection);
 
+/**
+ *  The GCDTelnetLineHandler is called whenever a new line has been received
+ *  from the connected terminal.
+ *
+ *  The handler can return a string (or nil) to be sent back to the terminal.
+ *  Note that the string will be converted to ASCII characters.
+ *
+ *  @warning This block will be executed on arbitrary threads.
+ */
+typedef NSString* (^GCDTelnetLineHandler)(GCDTelnetConnection* connection, NSString* line);
+
+/**
+ *  The GCDTelnetServer class implements a Telnet server.
+ */
 @interface GCDTelnetServer : GCDTCPServer
+
+/**
+ *  Initializes a Telnet server on a given port and using the default GCDTelnetConnection class.
+ */
 - (instancetype)initWithPort:(NSUInteger)port startHandler:(GCDTelnetStartHandler)startHandler lineHandler:(GCDTelnetLineHandler)lineHandler;
+
+/**
+ *  This method is the designated initializer for the class.
+ *
+ *  Connection class must be [GCDTelnetConnection class] or a subclass of it.
+ */
 - (instancetype)initWithConnectionClass:(Class)connectionClass
                                    port:(NSUInteger)port
                            startHandler:(GCDTelnetStartHandler)startHandler
                             lineHandler:(GCDTelnetLineHandler)lineHandler;
+
 @end

@@ -210,14 +210,6 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
   }];
 }
 
-- (BOOL)writeANSIString:(NSString*)string withTimeout:(NSTimeInterval)timeout {
-  return [self writeData:[string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] withTimeout:timeout];
-}
-
-- (void)writeANSIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion {
-  [self writeDataAsynchronously:[string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] completion:completion];
-}
-
 @end
 
 @implementation GCDTelnetConnection (Subclassing)
@@ -383,6 +375,18 @@ static NSString* _StringFromIACBuffer(const unsigned char* buffer, NSUInteger le
     return nil;
   }
   return [handler(self, line) stringByReplacingOccurrencesOfString:@"\n" withString:kCarriageReturnString];
+}
+
+@end
+
+@implementation GCDTelnetConnection (Extensions)
+
+- (BOOL)writeANSIString:(NSString*)string withTimeout:(NSTimeInterval)timeout {
+  return [self writeData:[string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] withTimeout:timeout];
+}
+
+- (void)writeANSIStringAsynchronously:(NSString*)string completion:(void (^)(BOOL success))completion {
+  [self writeDataAsynchronously:[string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] completion:completion];
 }
 
 @end

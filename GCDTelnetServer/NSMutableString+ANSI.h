@@ -27,6 +27,11 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ *  Constants representing ANSI colors.
+ *
+ *  See https://en.wikipedia.org/wiki/ANSI_escape_code for details.
+ */
 typedef NS_ENUM(unsigned char, ANSIColor) {
   kANSIColor_Black = 0,
   kANSIColor_Red,
@@ -38,8 +43,19 @@ typedef NS_ENUM(unsigned char, ANSIColor) {
   kANSIColor_White
 };
 
-// See https://en.wikipedia.org/wiki/ANSI_escape_code for details
+/**
+ *  Extensions to NSMutableString to create ANSI colored strings.
+ */
 @interface NSMutableString (ANSI)
+
+/**
+ *  Appends a string using the provided ANSI color and optionally in bold.
+ */
 - (void)appendANSIString:(NSString*)string withColor:(ANSIColor)color bold:(BOOL)bold;
+
+/**
+ *  Appends a formatted string using the provided ANSI color and optionally in bold.
+ */
 - (void)appendANSIStringWithColor:(ANSIColor)color bold:(BOOL)bold format:(NSString*)format, ... NS_FORMAT_FUNCTION(3,4);
+
 @end
