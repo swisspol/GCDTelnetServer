@@ -22,3 +22,28 @@ Alternatively, you can install GCDTelnetServer using [CocoaPods](http://cocoapod
 ```
 pod "GCDTelnetServer", "~> 1.0"
 ```
+
+Using GCDTelnetServer in Your App
+=================================
+
+```objectivec
+#import "GCDTelnetServer.h"
+
+GCDTCPServer* server = [[GCDTelnetServer alloc] initWithPort:2323 startHandler:^NSString*(GCDTelnetConnection* connection) {
+  
+  // Return welcome message
+  return [NSString stringWithFormat:@"You are connected using \"%@\"\n", connection.terminalType];
+  
+} lineHandler:^NSString*(GCDTelnetConnection* connection, NSString* line) {
+  
+  // Simply echo back the received line
+  // You could as easily execute a command and return a result as a string
+  return [line stringByAppendingString:@"\n"];
+  
+}];
+[server start];
+```
+
+Then launch Terminal on your Mac, and simply enter `telnet YOUR_COMPUTER_OR_IPHONE_IP_ADDRESS 2323` and voilà, you can communicate "live" with your app.
+
+**GCDTelnetServer has an extensive customization API, be sure to peruse [GCDTelnetConnection.h](GCDTelnetServer/GCDTelnetConnection.h).**
