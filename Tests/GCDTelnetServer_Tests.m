@@ -32,6 +32,7 @@
 
 #import "GCDTelnetServer.h"
 
+#define kTestPort 3333
 #define kCommunicationSleepDelay (100 * 1000)
 
 @interface GCDTelnetServer_Tests : XCTestCase
@@ -47,7 +48,7 @@
 }
 
 - (void)testHandlers {
-  GCDTelnetServer* server = [[GCDTelnetServer alloc] initWithPort:4444 startHandler:^NSString*(GCDTelnetConnection* connection) {
+  GCDTelnetServer* server = [[GCDTelnetServer alloc] initWithPort:kTestPort startHandler:^NSString*(GCDTelnetConnection* connection) {
     return @"Hello World!\n";
   } lineHandler:^NSString *(GCDTelnetConnection* connection, NSString* line) {
     return [line stringByAppendingString:@"\n"];
@@ -55,7 +56,7 @@
   XCTAssertTrue([server start]);
   
   XCTestExpectation* expectation = [self expectationWithDescription:nil];
-  [GCDTCPConnection connectAsynchronouslyToHost:@"localhost" port:4444 timeout:1.0 completion:^(GCDTCPConnection* connection) {
+  [GCDTCPConnection connectAsynchronouslyToHost:@"localhost" port:kTestPort timeout:1.0 completion:^(GCDTCPConnection* connection) {
     XCTAssertNotNil(connection);
     [connection open];
     
