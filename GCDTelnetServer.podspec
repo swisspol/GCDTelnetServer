@@ -22,6 +22,7 @@ Pod::Spec.new do |s|
     cs.source_files = 'GCDNetworking/GCDNetworking/*.{h,m}'
     cs.private_header_files = "GCDNetworking/GCDNetworking/*Private.h"
     cs.requires_arc = true
+    cs.osx.frameworks = 'SystemConfiguration'
     cs.ios.frameworks = 'CFNetwork'
   end
 
