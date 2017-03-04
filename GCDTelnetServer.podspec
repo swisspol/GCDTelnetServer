@@ -7,7 +7,7 @@
 
 Pod::Spec.new do |s|
   s.name     = 'GCDTelnetServer'
-  s.version  = '1.1.3'
+  s.version  = '1.1.4'
   s.author   =  { 'Pierre-Olivier Latour' => 'info@pol-online.net' }
   s.license  = { :type => 'BSD', :file => 'LICENSE' }
   s.homepage = 'https://github.com/swisspol/GCDTelnetServer'
