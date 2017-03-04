@@ -55,7 +55,7 @@
   }];
   XCTAssertTrue([server start]);
   
-  XCTestExpectation* expectation = [self expectationWithDescription:nil];
+  XCTestExpectation* expectation = [self expectationWithDescription:@""];
   [GCDTCPConnection connectAsynchronouslyToHost:@"localhost" port:kTestPort timeout:1.0 completion:^(GCDTCPConnection* connection) {
     XCTAssertNotNil(connection);
     [connection open];
