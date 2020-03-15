@@ -1,7 +1,6 @@
 Overview
 ========
 
-[![Build Status](https://travis-ci.org/swisspol/GCDTelnetServer.svg?branch=master)](https://travis-ci.org/swisspol/GCDTelnetServer)
 [![Version](http://cocoapod-badges.herokuapp.com/v/GCDTelnetServer/badge.png)](http://cocoadocs.org/docsets/GCDTelnetServer)
 [![Platform](http://cocoapod-badges.herokuapp.com/p/GCDTelnetServer/badge.png)](https://github.com/swisspol/GCDTelnetServer)
 [![License](http://img.shields.io/cocoapods/l/GCDTelnetServer.svg)](LICENSE)
